@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MovieShuffle.Data;
 using MovieShuffle.Factories;
+using MovieShuffle.Factories.Interfaces;
 using MovieShuffle.Models;
 using MovieShuffle.Utilities.Db.Providers;
 using Newtonsoft.Json;

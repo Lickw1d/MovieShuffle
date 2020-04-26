@@ -3,90 +3,12 @@
 @{
     ViewData["Title"] = "MovieShuffle";
 }
-    <script type="text/javascript">
-
-        movieShuffle = {
-            shuffleSet: [],
-            remainingMoviesTable: [],
-            nextUp: {}
-        }
-
-        movieShuffle.Roll = () => {
-            $("#rollModal .modal-body .nextQuestion").html("");
-            $("#rollModal .modal-body .responses").html("");
-
-            var randIndex = getRandom(0, movieShuffle.shuffleSet.length)
-            var nextNum = movieShuffle.shuffleSet[randIndex];
-
-            movieShuffle.nextUp = _.find(movieShuffle.remainingMoviesTable, m => { return m["#"] == nextNum});
-        }
-
-        $(document).ready(function () {
-
-            $("#rollModal").on("shown.bs.modal", function (e) {
-                movieShuffle.Roll();
-
-                $("#rollModal .modal-body .nextQuestion").html("#" + movieShuffle.nextUp["#"] + ": " + movieShuffle.nextUp.Question);
-                var responses = "";
-
-                _.forOwn(movieShuffle.nextUp, (value, key) => {
-
-                    if (key != "Question" && key !== "Watched" && key != "#")
-                        $("#rollModal .modal-body .responses").append("<p><strong>" + key + ":</strong> " + (!value ? "" : value) + "</p>");
-                });
-                
-            });
-
-            $("#rollModal .btn-primary").on("click", function () {
-                axios
-
-            });
-        });
-
-        SetChoices(movieShuffle);
-
-        function getRandom(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-
-
-        function SetChoices(movieShuffle) {
-
-            axios.get('MovieShuffle/Get').then((data) => {
-                movieShuffle.remainingMoviesTable = data.data.RemainingMoviesTable
-
-                InitTable(movieShuffle);
-
-                $('#movieChoices').bootstrapTable({
-                    data: movieShuffle.remainingMoviesTable
-                });
-            });
-        }
-
-        function InitTable(movieShuffle) {
-            var tHeader = $('#movieChoices thead tr');
-
-            var headers = _.keys(movieShuffle.remainingMoviesTable[0]);
-            _.forEach(headers, header => bindHeaders(tHeader, header));
-
-            _.forEach(movieShuffle.remainingMoviesTable, (row) => {
-
-                if (row["Watched"] !== 'Yes') {
-                    movieShuffle.shuffleSet.push(row["#"]);
-                }
-                    
-            });
-        }
-
-        function bindHeaders(tHeader, header) {
-            tHeader.append("<th data-field = '"+header+"'>" + header + "</th>");
-        }
-    </script>
-
-    <button data-toggle="modal" data-target="#rollModal" class="mx-auto btn btn-success" type="button">Roll</button>
-    <table id="movieChoices" class="table">
-        <thead><tr></tr></thead>
-    </table>
+<script type="text/javascript" src="~/js/Services/movieShuffleService.js"></script>
+<script type="text/javascript" src="js/movieShuffle.js" asp-append-version="true"></script>
+<button data-toggle="modal" data-target="#rollModal" class="mx-auto btn btn-success" type="button">Roll</button>
+<table id="movieChoices" class="table">
+    <thead><tr></tr></thead>
+</table>
 <div class="modal fade" id="rollModal" tabindex="-1" role="dialog" aria-labelledby="rollModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -105,8 +27,8 @@
                 <button type="button" class="btn btn-primary" data-dismiss="modal">Sure</button>
             </div>
         </div>
-        </div>
     </div>
+</div>
 <style>
     .watched_true {
         color: darkgrey;

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MovieShuffle.Factories;
+using MovieShuffle.Factories.Interfaces;
 using MovieShuffle.Utilities;
 using MovieShuffle.Utilities.Db;
 using MovieShuffle.Utilities.Db.Providers;

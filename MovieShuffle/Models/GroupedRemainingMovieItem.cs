@@ -9,7 +9,7 @@ namespace MovieShuffle.Models
     public class GroupedRemainingMovieItem
     {
         public Question Question;
-        public IList<RemainingMovieItem> UserResponses;
+        public IList<RemainingMovieItem> QuestionResponses;
         public bool Watched;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MovieShuffle.Data;
+using MovieShuffle.Factories.Interfaces;
 using MovieShuffle.Models;
 using MovieShuffle.Utilities.Db.Providers;
 using System;
@@ -25,7 +26,7 @@ namespace MovieShuffle.Factories
             return new GroupedRemainingMovieItem()
             {
                 Question = questionDbProvider.GetBy(Tuple.Create("id", movieItems[0].QuestionResponse.QuestionId)).FirstOrDefault(),
-                UserResponses = movieItems.OrderBy(mi => mi.UserName).ToList(),
+                QuestionResponses = movieItems.OrderBy(mi => mi.UserName).ToList(),
                 Watched = movieItems.Any(mi => mi.Watched)
             };
 
