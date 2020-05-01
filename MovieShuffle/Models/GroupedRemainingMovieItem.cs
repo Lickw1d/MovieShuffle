@@ -8,8 +8,8 @@ namespace MovieShuffle.Models
 {
     public class GroupedRemainingMovieItem
     {
-        public Question Question;
-        public IList<RemainingMovieItem> QuestionResponses;
-        public bool Watched;
+        public Question Question { get; set; }
+        public List<RemainingMovieItem> QuestionResponses { get; set; }
+        public bool Watched { get; set; }
     }
 }

@@ -11,6 +11,11 @@ const movieShuffleService = {
 
             getData: () => {
                 return axios.get('MovieShuffle/Get').then((response) => {
+                    movieShuffle.shuffleSet = [];
+                    movieShuffle.remainingMoviesTable = [];
+                    movieShuffle.tableHeaders = [];
+                    movieShuffle.flattenedTable = [];
+                    movieShuffle.nextUp = [];
                     movieShuffle.remainingMoviesTable = response.data;
                     movieShuffle.flattenTable();
                 });
@@ -24,7 +29,6 @@ const movieShuffleService = {
                 };
 
                 movieShuffle.remainingMoviesTable.forEach((value, index) => {
-
                     var flatRow = {};
                     flatRow["#"] = value.Question.Ordinal;
                     flatRow["Question"] = value.Question.Text;
@@ -51,6 +55,10 @@ const movieShuffleService = {
                 var nextNum = movieShuffle.shuffleSet[randIndex];
 
                 movieShuffle.nextUp = movieShuffle.remainingMoviesTable[nextNum];
+            },
+
+            SetNext: (movieItem) => {
+                return axios({method:'POST',url:'MovieShuffle/SetNext', data:movieItem});
             }
 
         }

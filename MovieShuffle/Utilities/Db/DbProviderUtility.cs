@@ -15,11 +15,10 @@ namespace MovieShuffle.Utilities.Db
             Dictionary<string, string> overrides
             )
         {
-                return row.Field<T>(
-                    overrides.ContainsKey(fieldName.ToLower()) ?
-                    overrides[fieldName.ToLower()] :
-                    fieldName
-                    );
+            string keyVal = overrides.ContainsKey(fieldName.ToLower()) ? overrides[fieldName.ToLower()] : fieldName;
+                
+            
+            return row.Table.Columns.Contains(keyVal) ?  row.Field<T>(keyVal) : default;
 
 
         }

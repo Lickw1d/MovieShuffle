@@ -1,7 +1,7 @@
 ﻿const movieShuffle = movieShuffleService.create();
-const getDataResponse = movieShuffle.getData();
+const getDataResponse = movieShuffle.getData;
 
-var _page = {
+const _page = {
     setHeaders: (movieShuffle) => {
 
         movieShuffle.tableHeaders.forEach((header) => {
@@ -25,10 +25,10 @@ var _page = {
     },
 
     setModal: (movieShuffle) => {
-        $("#rollModal .modal-body .nextQuestion").html("#" + movieShuffle.nextUp.Question.Ordinal + ": " + movieShuffle.nextUp.Question.Text);
+        $("#rollModal .modal-body .nextQuestion").html("<span>#" + movieShuffle.nextUp.Question.Ordinal + ": " + movieShuffle.nextUp.Question.Text+"</span>");
 
         movieShuffle.nextUp.QuestionResponses.forEach((response) => {
-            $("#rollModal .modal-body .responses").append("<p><strong>" + response.UserName + ":</strong> " + response.QuestionResponse.Response + "</p>");
+            $("#rollModal .modal-body .responses").append("<p  class = 'animated fadeIn'><strong>" + response.UserName + ":</strong> " + response.QuestionResponse.Response + "</p>");
         });
     }
 }
@@ -36,7 +36,7 @@ var _page = {
 
 $(function () {
 
-    getDataResponse.then(() => {
+    getDataResponse().then(() => {
         _page.setHeaders(movieShuffle);
         _page.bindTable(movieShuffle);
     });
@@ -49,7 +49,13 @@ $(function () {
 
     });
 
-    $("#rollModal .btn-primary, #rollModal .btn-secondary").on("click", function () {
+    $("#rollModal .btn-primary, #rollModal .btn-secondary").on("click",
+        function () {
         _page.clearModal();
     });
+
+    $("#rollModal .btn-primary").on("click",
+        function() {
+            movieShuffle.SetNext(movieShuffle.nextUp);
+        });
 });

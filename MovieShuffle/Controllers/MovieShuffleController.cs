@@ -34,79 +34,11 @@ namespace MovieShuffle.Controllers
             IEnumerable<GroupedRemainingMovieItem> movieGroups = groupedRemainingMovieItemFactory.CreateList(movieItems);
             return Ok(JsonConvert.SerializeObject(movieGroups));
         }
-        // GET: MovieShuffle/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
 
-        // GET: MovieShuffle/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: MovieShuffle/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult SetNext([FromBody]GroupedRemainingMovieItem movieItem)
         {
-            try
-            {
-                // TODO: Add insert logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: MovieShuffle/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: MovieShuffle/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: MovieShuffle/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: MovieShuffle/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            return Ok();
         }
     }
 }

@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
 using MovieShuffle.Data;
-using MovieShuffle.Utilities.Db.AbstractClasses;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using MovieShuffle.Utilities.Db.Providers.AbstractClasses;
 
 namespace MovieShuffle.Utilities.Db.Providers
 {
