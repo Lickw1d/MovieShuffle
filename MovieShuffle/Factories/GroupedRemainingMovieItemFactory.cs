@@ -25,7 +25,7 @@ namespace MovieShuffle.Factories
             //TODO: Check if all are same question. log if not 
             return new GroupedRemainingMovieItem()
             {
-                Question = questionDbProvider.GetBy(Tuple.Create("id", movieItems[0].QuestionResponse.QuestionId), "usp_Question_GetBy").FirstOrDefault(),
+                Question = questionDbProvider.GetBy(Tuple.Create("id", movieItems[0].QuestionResponse.QuestionId)).FirstOrDefault(),
                 QuestionResponses = movieItems.OrderBy(mi => mi.UserName).ToList(),
                 Watched = movieItems.Any(mi => mi.Watched),
                 Watching = movieItems.Any(mi=>mi.Watching)
