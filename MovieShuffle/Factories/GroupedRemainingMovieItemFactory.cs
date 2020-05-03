@@ -25,9 +25,10 @@ namespace MovieShuffle.Factories
             //TODO: Check if all are same question. log if not 
             return new GroupedRemainingMovieItem()
             {
-                Question = questionDbProvider.GetBy(Tuple.Create("id", movieItems[0].QuestionResponse.QuestionId)).FirstOrDefault(),
+                Question = questionDbProvider.GetBy(Tuple.Create("id", movieItems[0].QuestionResponse.QuestionId), "usp_Question_GetBy").FirstOrDefault(),
                 QuestionResponses = movieItems.OrderBy(mi => mi.UserName).ToList(),
-                Watched = movieItems.Any(mi => mi.Watched)
+                Watched = movieItems.Any(mi => mi.Watched),
+                Watching = movieItems.Any(mi=>mi.Watching)
             };
 
         }
@@ -36,6 +37,24 @@ namespace MovieShuffle.Factories
         {
             IEnumerable<IGrouping<int,RemainingMovieItem>> movieItemGroups = movieItems.GroupBy(mi => mi.QuestionResponse.QuestionId);
             return movieItemGroups.Select(mig =>Create(mig.ToList()));
+        }
+
+        public IEnumerable<SelectedQuestion> ToSelectedQuestion(GroupedRemainingMovieItem groupedRemainingMovieItem)
+        {
+            var responses = new List<SelectedQuestion>();
+
+            groupedRemainingMovieItem.QuestionResponses.ForEach(qr =>
+            {
+                responses.Add(new SelectedQuestion()
+                {
+                    Questionid = groupedRemainingMovieItem.Question.Id,
+                    Questionresponseid = qr.QuestionResponse.Id,
+                    Watching = false
+                });
+
+            });
+
+            return responses;
         }
     }
 }

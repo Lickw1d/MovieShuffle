@@ -32,6 +32,7 @@ namespace MovieShuffle
             services.AddScoped<QuestionDbProvider>();
             services.AddScoped<QuestionResponseDbProvider>();
             services.AddScoped<RemainingMovieItemDbProvider>();
+            services.AddScoped<SelectedQuestionDbProvider>();
             services.AddScoped<IGroupedRemainingMovieItemFactory, GroupedRemainingMovieItemFactory>();
             services.AddControllersWithViews();
             services.Configure<IISOptions>(options =>

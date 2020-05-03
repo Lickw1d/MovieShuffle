@@ -19,31 +19,8 @@ namespace MovieShuffle.Utilities.Db.Providers
             IConfiguration configuration
             ) : base(configuration)
         {
+            getByProc = "usp_GetRemainingMovieItems";
             this.questionResponseDbProvider = questionResponseDbProvider;
-        }
-
-        public override IEnumerable<RemainingMovieItem> GetBy<T>(IList<Tuple<string, T>> fields)
-        {
-            var proc = "usp_GetRemainingMovieItems";
-
-            using (SqlConnection conn = new SqlConnection(configuration.GetConnectionString("movieShuffle")))
-            {
-                using (SqlCommand comm = new SqlCommand(proc, conn))
-                {
-                    comm.CommandType = CommandType.StoredProcedure;
-                    fields.ToList().ForEach(f => comm.Parameters.Add(f.Item1, f.Item2.GetSqlType()).Value = f.Item2);
-
-                    using (SqlDataAdapter adapter = new SqlDataAdapter(comm))
-                    {
-                        DataTable t = new DataTable();
-                        conn.Open();
-                        adapter.Fill(t);
-                        conn.Close();
-
-                       return t.AsEnumerable().Select(r => GetFromDataRow(r));
-                    }
-                }
-            }
         }
 
         public override RemainingMovieItem GetFromDataRow(DataRow row, Dictionary<string, string> overrides)
@@ -58,7 +35,8 @@ namespace MovieShuffle.Utilities.Db.Providers
             {
                 QuestionResponse = questionResponse,
                 UserName = row.FieldOverride<string>("UserName", overrides),
-                Watched = row.FieldOverride<bool>("Watched", overrides)
+                Watched = row.FieldOverride<bool>("Watched", overrides),
+                Watching = row.FieldOverride<bool>("Watching",overrides)
             };
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,12 +16,17 @@ namespace MovieShuffle.Controllers
 {
     public class MovieShuffleController : Controller
     {
-        private RemainingMovieItemDbProvider dbProvider;
+        private RemainingMovieItemDbProvider remainingMovieDbProvider;
+        private SelectedQuestionDbProvider selectedQuestionDbProvider;
         private IGroupedRemainingMovieItemFactory groupedRemainingMovieItemFactory;
-        public MovieShuffleController(RemainingMovieItemDbProvider dbProvider, IGroupedRemainingMovieItemFactory groupedRemainingMovieItemFactory)
+        public MovieShuffleController(
+            RemainingMovieItemDbProvider dbProvider, 
+            IGroupedRemainingMovieItemFactory groupedRemainingMovieItemFactory,
+            SelectedQuestionDbProvider selectedQuestionDbProvider)
         {
-            this.dbProvider = dbProvider;
+            this.remainingMovieDbProvider = dbProvider;
             this.groupedRemainingMovieItemFactory = groupedRemainingMovieItemFactory;
+            this.selectedQuestionDbProvider = selectedQuestionDbProvider;
         }
         // GET: MovieShuffle
         public ActionResult Index()
@@ -30,7 +36,7 @@ namespace MovieShuffle.Controllers
 
         public ActionResult Get()
         {
-            IEnumerable<RemainingMovieItem> movieItems = dbProvider.Get();
+            IEnumerable<RemainingMovieItem> movieItems = remainingMovieDbProvider.Get();
             IEnumerable<GroupedRemainingMovieItem> movieGroups = groupedRemainingMovieItemFactory.CreateList(movieItems);
             return Ok(JsonConvert.SerializeObject(movieGroups));
         }
@@ -38,7 +44,26 @@ namespace MovieShuffle.Controllers
         [HttpPost]
         public ActionResult SetNext([FromBody]GroupedRemainingMovieItem movieItem)
         {
-            return Ok();
+            //TODO: Could be made more efficient with long standing sql transactions / batch inserts
+            IEnumerable<SelectedQuestion> prevSelectedQuestions= selectedQuestionDbProvider.GetBy(Tuple.Create("watching", true));
+
+                foreach (var selectedQuestion in prevSelectedQuestions)
+                {
+                        selectedQuestion.Watching = false;
+                        selectedQuestionDbProvider.Update(selectedQuestion);
+                }
+
+                IEnumerable<SelectedQuestion> newSelectedQuestions =
+                    groupedRemainingMovieItemFactory.ToSelectedQuestion(movieItem);
+
+                foreach (var selectedQuestion in newSelectedQuestions)
+                {
+                    selectedQuestion.Watching = true;
+                    selectedQuestionDbProvider.Insert(selectedQuestion);
+                }
+
+
+                return Ok();
         }
     }
 }

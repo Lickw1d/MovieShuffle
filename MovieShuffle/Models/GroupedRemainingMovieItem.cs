@@ -11,5 +11,6 @@ namespace MovieShuffle.Models
         public Question Question { get; set; }
         public List<RemainingMovieItem> QuestionResponses { get; set; }
         public bool Watched { get; set; }
+        public bool Watching { get; set; }
     }
 }

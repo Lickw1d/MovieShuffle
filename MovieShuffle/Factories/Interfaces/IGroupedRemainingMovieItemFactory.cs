@@ -11,5 +11,6 @@ namespace MovieShuffle.Factories.Interfaces
     {
         public GroupedRemainingMovieItem Create(IList<RemainingMovieItem> movieItems);
         public IEnumerable<GroupedRemainingMovieItem> CreateList(IEnumerable<RemainingMovieItem> items);
+        public IEnumerable<SelectedQuestion> ToSelectedQuestion(GroupedRemainingMovieItem groupedRemainingMovieItem);
     }
 }

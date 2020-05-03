@@ -1,7 +1,15 @@
 ﻿const movieShuffle = movieShuffleService.create();
-const getDataResponse = movieShuffle.getData;
 
 const _page = {
+
+    setCurrentMovie: (movieShuffle) => {
+        $("#currentWatch .current-question").html("<span>#" + movieShuffle.currentMovie.Question.Ordinal + ": " + movieShuffle.currentMovie.Question.Text + "</span>");
+
+        movieShuffle.currentMovie.QuestionResponses.forEach(response => {
+            $("#currentWatch .current-responses").append("<p  class = 'animated fadeIn'><strong>" + response.UserName + ":</strong> " + response.QuestionResponse.Response + "</p>");
+        });
+    },
+
     setHeaders: (movieShuffle) => {
 
         movieShuffle.tableHeaders.forEach((header) => {
@@ -18,17 +26,34 @@ const _page = {
             data: movieShuffle.flattenedTable
         });
     },
-
+    clearHeaders: (tHeader) => {
+        tHeader.html('');
+    },
     clearModal: () => {
         $("#rollModal .modal-body .responses").html('');
         $("#rollModal .modal-body .nextQuestion").html('');
     },
-
+    clearCurrentMovie: () => {
+        $("#currentWatch .current-question").html('');
+        $("#currentWatch .current-responses").html('');
+    },
     setModal: (movieShuffle) => {
         $("#rollModal .modal-body .nextQuestion").html("<span>#" + movieShuffle.nextUp.Question.Ordinal + ": " + movieShuffle.nextUp.Question.Text+"</span>");
 
         movieShuffle.nextUp.QuestionResponses.forEach((response) => {
             $("#rollModal .modal-body .responses").append("<p  class = 'animated fadeIn'><strong>" + response.UserName + ":</strong> " + response.QuestionResponse.Response + "</p>");
+        });
+    },
+
+    refresh: () => {
+
+        movieShuffle.getData().then(() => {
+            _page.clearCurrentMovie();
+            _page.clearHeaders($("#movieChoices thead tr"));
+
+            _page.setCurrentMovie(movieShuffle);
+            _page.setHeaders(movieShuffle);
+            _page.bindTable(movieShuffle);
         });
     }
 }
@@ -36,10 +61,7 @@ const _page = {
 
 $(function () {
 
-    getDataResponse().then(() => {
-        _page.setHeaders(movieShuffle);
-        _page.bindTable(movieShuffle);
-    });
+    _page.refresh();
 
 
     $("#rollModal").on("shown.bs.modal", function (e) {
@@ -56,6 +78,6 @@ $(function () {
 
     $("#rollModal .btn-primary").on("click",
         function() {
-            movieShuffle.SetNext(movieShuffle.nextUp);
+            movieShuffle.SetNext(movieShuffle.nextUp).then(() => { _page.refresh() });
         });
 });

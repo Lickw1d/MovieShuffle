@@ -8,10 +8,13 @@ namespace MovieShuffle.Utilities.Db.Providers.Interfaces
 {
     interface IDbProvider<T>
     {
-        IEnumerable<T> Get();
-        IEnumerable<T> GetBy<T2>(Tuple<string,T2> field);
-        IEnumerable<T> GetBy<T2>(IList<Tuple<string, T2>> fields);
+        IEnumerable<T> Get(string procName);
+        IEnumerable<T> GetBy<T2>(Tuple<string,T2> field, string procName);
+        IEnumerable<T> GetBy<T2>(IList<Tuple<string, T2>> fields, string procName);
         T GetFromDataRow(DataRow row);
         T GetFromDataRow(DataRow row, Dictionary<string, string> overrides);
+        bool Insert(T obj);
+        bool Update(T obj);
+
     }
 }

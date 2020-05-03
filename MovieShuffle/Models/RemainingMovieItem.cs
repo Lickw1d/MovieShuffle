@@ -7,8 +7,9 @@ namespace MovieShuffle.Data
 {
     public class RemainingMovieItem
     {
-        public QuestionResponse QuestionResponse;
-        public string UserName;
-        public bool Watched;
+        public QuestionResponse QuestionResponse { get; set; }
+        public string UserName { get; set; }
+        public bool Watched { get; set; }
+        public bool Watching { get; set; }
     }
 }

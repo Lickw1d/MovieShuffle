@@ -13,31 +13,11 @@ namespace MovieShuffle.Utilities.Db.Providers
 {
     public class QuestionDbProvider : ADbProvider<Question>
     {
-        public QuestionDbProvider(IConfiguration configuration) : base(configuration) { }
-
-        public override IEnumerable<Question> GetBy<T2>(IList<Tuple<string, T2>> fields)
+        public QuestionDbProvider(IConfiguration configuration) : base(configuration)
         {
-            var proc = "usp_Question_GetBy";
-
-            using (SqlConnection conn = new SqlConnection(configuration.GetConnectionString("movieShuffle")))
-            {
-                using (SqlCommand comm = new SqlCommand(proc, conn))
-                {
-                    comm.CommandType = CommandType.StoredProcedure;
-                    fields.ToList().ForEach(f => comm.Parameters.Add(f.Item1, f.Item2.GetSqlType()).Value = f.Item2);
-
-                    using (SqlDataAdapter adapter = new SqlDataAdapter(comm))
-                    {
-                        DataTable t = new DataTable();
-                        conn.Open();
-                        adapter.Fill(t);
-                        conn.Close();
-
-                        return t.AsEnumerable().Select(r => GetFromDataRow(r));
-                    }
-                }
-            }
+            getByProc = "usp_Question_GetBy";
         }
+
         public override Question GetFromDataRow(DataRow row, Dictionary<string, string> overrides)
         {
             return new Question()

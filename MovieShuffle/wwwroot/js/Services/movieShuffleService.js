@@ -7,6 +7,7 @@ const movieShuffleService = {
             remainingMoviesTable: [],
             tableHeaders: [],
             flattenedTable: [],
+            currentMovie: {},
             nextUp: {},
 
             getData: () => {
@@ -15,7 +16,8 @@ const movieShuffleService = {
                     movieShuffle.remainingMoviesTable = [];
                     movieShuffle.tableHeaders = [];
                     movieShuffle.flattenedTable = [];
-                    movieShuffle.nextUp = [];
+                    currentMovie: {}
+                    movieShuffle.nextUp = {};
                     movieShuffle.remainingMoviesTable = response.data;
                     movieShuffle.flattenTable();
                 });
@@ -45,6 +47,9 @@ const movieShuffleService = {
 
                     if (!value.Watched)
                         movieShuffle.shuffleSet.push(index);
+
+                    if (value.Watching)
+                        movieShuffle.currentMovie = value;
                 });
 
                 movieShuffle.tableHeaders = _.keys(tableHash);

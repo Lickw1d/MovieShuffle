@@ -5,6 +5,14 @@
 }
 <script type="text/javascript" src="~/js/Services/movieShuffleService.js"></script>
 <script type="text/javascript" src="js/movieShuffle.js" asp-append-version="true"></script>
+
+<div id="currentWatch">
+    <div class="current-body">
+        <h5 class="current-question mb-2"></h5>
+        <div class="current-responses"></div>
+    </div>
+</div>
+
 <button data-toggle="modal" data-target="#rollModal" class="mx-auto btn btn-success" type="button">Roll</button>
 <table id="movieChoices" class="table">
     <thead><tr></tr></thead>
@@ -32,6 +40,11 @@
 <style>
     .watched_true {
         color: darkgrey;
+    }
+
+    #currentWatch {
+        text-align: center;
+        margin: 0 auto;
     }
 </style>
 
