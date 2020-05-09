@@ -41,23 +41,29 @@ namespace MovieShuffle.Factories
 
         public IEnumerable<GroupedRemainingMovieItem> CreateList(IEnumerable<RemainingMovieItem> movieItems)
         {
+            var questionDictionary = new Dictionary<int, Question>();
+
+            foreach (Question question in questionDbProvider.Get())
+            {
+                questionDictionary.Add(question.Id,question);
+            }
+
+            questionDbProvider.Get();
             IEnumerable<IGrouping<int,RemainingMovieItem>> movieItemGroups = movieItems.GroupBy(mi => mi.QuestionResponse.QuestionId);
-            var conn = new SqlConnection(configuration.GetConnectionString("movieShuffle"));
             var results = new List<GroupedRemainingMovieItem>();
 
-            using (conn)
-            {
-                conn.Open();
 
                 foreach (var movieItemGroup in movieItemGroups)
                 {
-                    Question question = questionDbProvider.GetBy(Tuple.Create("id", movieItemGroup.First().QuestionResponse.QuestionId), conn).FirstOrDefault();
+                    Question question = questionDictionary.ContainsKey(movieItemGroup.First().QuestionResponse.QuestionId) ? 
+                        questionDictionary[movieItemGroup.First().QuestionResponse.QuestionId] 
+                        : 
+                        null;
+
                     results.Add(Create(movieItemGroup.ToList(), question));
                 }
-            }
 
-            return results;
-
+                return results;
         }
 
         public IEnumerable<SelectedQuestion> ToSelectedQuestion(GroupedRemainingMovieItem groupedRemainingMovieItem)
