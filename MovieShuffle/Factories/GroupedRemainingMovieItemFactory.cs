@@ -4,39 +4,60 @@ using MovieShuffle.Models;
 using MovieShuffle.Utilities.Db.Providers;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace MovieShuffle.Factories
 {
     public class GroupedRemainingMovieItemFactory : IGroupedRemainingMovieItemFactory
     {
         private QuestionDbProvider questionDbProvider;
-
-        public GroupedRemainingMovieItemFactory(QuestionDbProvider questionDbProvider)
+        private IConfiguration configuration;
+        public GroupedRemainingMovieItemFactory(QuestionDbProvider questionDbProvider, IConfiguration configuration)
         {
             this.questionDbProvider = questionDbProvider;
+            this.configuration = configuration;
         }
-        public GroupedRemainingMovieItem Create(IList<RemainingMovieItem> movieItems)
+
+        public GroupedRemainingMovieItem Create(IList<RemainingMovieItem> movieItems, Question question)
         {
             if (movieItems.Count == 0)
                 return new GroupedRemainingMovieItem();
 
             //TODO: Check if all are same question. log if not 
-            return new GroupedRemainingMovieItem()
+            var item =  new GroupedRemainingMovieItem()
             {
-                Question = questionDbProvider.GetBy(Tuple.Create("id", movieItems[0].QuestionResponse.QuestionId)).FirstOrDefault(),
+                Question = question,
                 QuestionResponses = movieItems.OrderBy(mi => mi.UserName).ToList(),
                 Watched = movieItems.Any(mi => mi.Watched),
                 Watching = movieItems.Any(mi=>mi.Watching)
             };
+
+            return item;
 
         }
 
         public IEnumerable<GroupedRemainingMovieItem> CreateList(IEnumerable<RemainingMovieItem> movieItems)
         {
             IEnumerable<IGrouping<int,RemainingMovieItem>> movieItemGroups = movieItems.GroupBy(mi => mi.QuestionResponse.QuestionId);
-            return movieItemGroups.Select(mig =>Create(mig.ToList()));
+            var conn = new SqlConnection(configuration.GetConnectionString("movieShuffle"));
+            var results = new List<GroupedRemainingMovieItem>();
+
+            using (conn)
+            {
+                conn.Open();
+
+                foreach (var movieItemGroup in movieItemGroups)
+                {
+                    Question question = questionDbProvider.GetBy(Tuple.Create("id", movieItemGroup.First().QuestionResponse.QuestionId), conn).FirstOrDefault();
+                    results.Add(Create(movieItemGroup.ToList(), question));
+                }
+            }
+
+            return results;
+
         }
 
         public IEnumerable<SelectedQuestion> ToSelectedQuestion(GroupedRemainingMovieItem groupedRemainingMovieItem)

@@ -18,6 +18,7 @@ namespace MovieShuffle.Utilities.Db.Providers
             insertProc = "usp_SelectedQuestion_Insert";
             getByProc = "usp_SelectedQuestion_GetBy";
             updateProc = "usp_SelectedQuestion_Update";
+            dbObjectName = "SelectedQuestion";
         }
 
         public override bool Insert(SelectedQuestion obj, string procName)
@@ -68,16 +69,16 @@ namespace MovieShuffle.Utilities.Db.Providers
             }
         }
 
-        public override SelectedQuestion GetFromDataRow(DataRow row, Dictionary<string, string> overrides)
+        public override SelectedQuestion GetFromDataRow(DataRow row, Dictionary<string, Dictionary<string,string>> overrides)
         {
             return new SelectedQuestion()
             {
-                Id = row.FieldOverride<int>("id", overrides),
-                Questionid = row.FieldOverride<int>("QuestionId", overrides),
-                Questionresponseid = row.FieldOverride<int>("questionResponseId", overrides),
-                CreatedTimeStamp = row.FieldOverride<DateTime>("CreatedTimeStamp", overrides),
-                Watching = row.FieldOverride<bool?>("Watching", overrides),
-                UpdatedTimeStamp = row.FieldOverride<DateTime>("UpdatedTimeStamp", overrides)
+                Id = row.FieldOverride<int>("id", overrides.GetDictionaryValue(dbObjectName)),
+                Questionid = row.FieldOverride<int>("QuestionId", overrides.GetDictionaryValue(dbObjectName)),
+                Questionresponseid = row.FieldOverride<int>("questionResponseId", overrides.GetDictionaryValue(dbObjectName)),
+                CreatedTimeStamp = row.FieldOverride<DateTime>("CreatedTimeStamp", overrides.GetDictionaryValue(dbObjectName)),
+                Watching = row.FieldOverride<bool?>("Watching", overrides.GetDictionaryValue(dbObjectName)),
+                UpdatedTimeStamp = row.FieldOverride<DateTime>("UpdatedTimeStamp", overrides.GetDictionaryValue(dbObjectName))
             };
         }
     }

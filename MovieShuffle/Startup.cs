@@ -5,11 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MovieShuffle.Factories;
 using MovieShuffle.Factories.Interfaces;
+using MovieShuffle.Models.Identity;
 using MovieShuffle.Utilities;
 using MovieShuffle.Utilities.Db;
 using MovieShuffle.Utilities.Db.Providers;
@@ -29,10 +32,14 @@ namespace MovieShuffle
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //Identity Server required entity. 
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("MovieShuffleContextConnection")));
             services.AddScoped<QuestionDbProvider>();
             services.AddScoped<QuestionResponseDbProvider>();
             services.AddScoped<RemainingMovieItemDbProvider>();
             services.AddScoped<SelectedQuestionDbProvider>();
+            services.AddScoped<MovieDbProvider>();
+            services.AddScoped<TmdbRequestUtility>();
             services.AddScoped<IGroupedRemainingMovieItemFactory, GroupedRemainingMovieItemFactory>();
             services.AddControllersWithViews();
             services.Configure<IISOptions>(options =>
@@ -59,6 +66,7 @@ namespace MovieShuffle
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -66,6 +74,7 @@ namespace MovieShuffle
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
         }
     }

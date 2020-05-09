@@ -13,7 +13,7 @@ namespace MovieShuffle.Data
 
         public int UserId { get; set; }
 
-        public string Response { get; set; }
+        public Movie Movie { get; set; }
 
         public DateTime CreatedTimestamp { get; set; }
 

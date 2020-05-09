@@ -15,6 +15,8 @@ namespace MovieShuffle.Utilities.Db.Providers.AbstractClasses
         protected string insertProc { get; set; }
         protected string updateProc { get; set; }
         protected string getByProc { get; set; }
+        protected string dbObjectName { get; set; }
+
         public ADbProvider(IConfiguration configuration)
         {
             this.configuration = configuration;
@@ -22,60 +24,85 @@ namespace MovieShuffle.Utilities.Db.Providers.AbstractClasses
 
         public IEnumerable<T> Get()
         {
-            return Get(getByProc);
+            return Get(getByProc,null);
         }
 
-        public IEnumerable<T> Get(string procName)
+        public IEnumerable<T> Get(string procName, SqlConnection conn = null)
         {
-            return GetBy(new Tuple<string,T>[0], procName);
+            var isExternal = conn != null;
+            conn ??= new SqlConnection(configuration.GetConnectionString("movieShuffle"));
+
+            if(!isExternal) conn.Open();
+
+            IEnumerable<T> resultObjects = GetBy(new Tuple<string, T>[0], procName, conn);
+
+            if(!isExternal) conn.Dispose();
+
+            return resultObjects;
         }
 
-        public IEnumerable<T> GetBy<T2>(Tuple<string, T2> field)
+        public IEnumerable<T> GetBy<T2>(Tuple<string, T2> field, SqlConnection conn = null)
         {
-            return GetBy<T2>(field, getByProc);
+            var isExternal = conn != null;
+            conn ??= new SqlConnection(configuration.GetConnectionString("movieShuffle"));
+
+            if (!isExternal) conn.Open();
+
+            IEnumerable<T> resultObjects = GetBy<T2>(field, getByProc, conn);
+
+            if (!isExternal) conn.Dispose();
+
+            return resultObjects;
         }
 
-        public IEnumerable<T> GetBy<T2>(Tuple<string, T2> field, string procName)
+        public IEnumerable<T> GetBy<T2>(Tuple<string, T2> field, string procName, SqlConnection conn = null)
         {
-            return GetBy(new[] { field }, procName);
+            var isExternal = conn != null;
+            conn ??= new SqlConnection(configuration.GetConnectionString("movieShuffle"));
+
+            if (!isExternal) conn.Open();
+
+            IEnumerable<T> resultObjects = GetBy(new[] { field }, procName, conn);
+
+            if (!isExternal) conn.Dispose();
+
+            return resultObjects;
+
         }
 
-        public IEnumerable<T> GetBy<T2>(IList<Tuple<string, T2>> fields)
-        {
-            return GetBy(fields, getByProc);
-        }
-
-        public IEnumerable<T> GetBy<T2>(IList<Tuple<string, T2>> fields, string procName)
+        public IEnumerable<T> GetBy<T2>(IList<Tuple<string, T2>> fields, string procName, SqlConnection conn)
         {
             if(string.IsNullOrEmpty(procName))
                 throw new Exception("db procedure not set");
-
-            using (SqlConnection conn = new SqlConnection(configuration.GetConnectionString("movieShuffle")))
+            
+            using (SqlCommand comm = new SqlCommand(procName, conn))
             {
-                using (SqlCommand comm = new SqlCommand(procName, conn))
-                {
                     comm.CommandType = CommandType.StoredProcedure;
                     fields.ToList().ForEach(f => comm.Parameters.Add(f.Item1, f.Item2.GetSqlType()).Value = f.Item2);
 
                     using (SqlDataAdapter adapter = new SqlDataAdapter(comm))
                     {
                         DataTable t = new DataTable();
-                        conn.Open();
+
                         adapter.Fill(t);
-                        conn.Close();
 
                         return t.AsEnumerable().Select(GetFromDataRow);
                     }
-                }
             }
         }
 
         public T GetFromDataRow(DataRow row)
         {
-            return GetFromDataRow(row, new Dictionary<string, string>());
+            return GetFromDataRow(row, new Dictionary<string, Dictionary<string,string>>());
         }
 
-        public virtual T GetFromDataRow(DataRow row, Dictionary<string, string> overrides)
+        /// <summary>
+        /// Gets object from DataRow.  Can be called from higher nested context
+        /// </summary>
+        /// <param name="row">DataRow</param>
+        /// <param name="overrides"> Dictionary of table alias overrides</param>
+        /// <returns></returns>
+        public virtual T GetFromDataRow(DataRow row, Dictionary<string, Dictionary<string,string>> overrides)
         {
             return default;
         }
@@ -114,5 +141,6 @@ namespace MovieShuffle.Utilities.Db.Providers.AbstractClasses
         {
             throw new NotImplementedException();
         }
+
     }
 }

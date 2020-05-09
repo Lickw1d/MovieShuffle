@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -38,6 +39,14 @@ namespace MovieShuffle.Utilities
                 return SqlTypeConvertDictionary[value.GetType()];
 
             return SqlDbType.VarChar;
+        }
+
+        public static void AddNullable<T>(this SqlParameterCollection parameters, string parameterName, SqlDbType sqlDbType, T value)
+        {
+            if (value == null)
+                parameters.Add(parameterName, sqlDbType).Value = DBNull.Value;
+            else
+                parameters.Add(parameterName, sqlDbType).Value = value;
         }
     }
 }

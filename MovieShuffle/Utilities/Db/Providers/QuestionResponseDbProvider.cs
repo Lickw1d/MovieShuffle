@@ -12,20 +12,34 @@ namespace MovieShuffle.Utilities.Db.Providers
 {
     public class QuestionResponseDbProvider : ADbProvider<QuestionResponse>
     {
-        public QuestionResponseDbProvider(IConfiguration configuration) : base(configuration)
+        private MovieDbProvider movieDbProvider;
+        public QuestionResponseDbProvider(IConfiguration configuration, MovieDbProvider movieDbProvider) : base(configuration)
         {
             getByProc = "usp_QuestionResponse_GetBy";
+            dbObjectName = "QuestionResponse";
+            this.movieDbProvider = movieDbProvider;
         }
 
-        public override QuestionResponse GetFromDataRow(DataRow row, Dictionary<string, string> overrides)
+        public override QuestionResponse GetFromDataRow(DataRow row, Dictionary<string, Dictionary<string,string>> overrides)
         {
+            if (overrides.Count == 0)
+            {
+                overrides.Add("movie", new Dictionary<string,string>()
+                {
+                    { "id", "MovieId"},
+                    {"CreatedTimeStamp", "MovieCreatedTimeStamp"},
+                });
+
+            }
+
             return new QuestionResponse()
             {
-                Id = row.FieldOverride<int>("Id", overrides),
-                QuestionId = row.FieldOverride<int>("QuestionId", overrides),
-                UserId = row.FieldOverride<int>("UserId", overrides),
-                Response = row.FieldOverride<string>("Response", overrides),
-                CreatedTimestamp = row.FieldOverride<DateTime>("CreatedTimeStamp", overrides)
+                Id = row.FieldOverride<int>("Id", overrides.GetDictionaryValue(dbObjectName)),
+                QuestionId = row.FieldOverride<int>("QuestionId", overrides.GetDictionaryValue(dbObjectName)),
+                UserId = row.FieldOverride<int>("UserId", overrides.GetDictionaryValue(dbObjectName)),
+                Movie = movieDbProvider.GetFromDataRow(row,overrides),
+                CreatedTimestamp = row.FieldOverride<DateTime>("CreatedTimeStamp", overrides.GetDictionaryValue(dbObjectName)),
+                
             };
         }
     }

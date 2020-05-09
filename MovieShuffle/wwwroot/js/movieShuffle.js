@@ -1,12 +1,12 @@
 ﻿const movieShuffle = movieShuffleService.create();
-
+const _modal = movieModalService.create();
 const _page = {
 
     setCurrentMovie: (movieShuffle) => {
-        $("#currentWatch .current-question").html("<span>#" + movieShuffle.currentMovie.Question.Ordinal + ": " + movieShuffle.currentMovie.Question.Text + "</span>");
+        $("#currentWatch .current-question").html("<span>#" + movieShuffle.currentMovie.question.ordinal + ": " + movieShuffle.currentMovie.question.text + "</span>");
 
-        movieShuffle.currentMovie.QuestionResponses.forEach(response => {
-            $("#currentWatch .current-responses").append("<p  class = 'animated fadeIn'><strong>" + response.UserName + ":</strong> " + response.QuestionResponse.Response + "</p>");
+        movieShuffle.currentMovie.questionResponses.forEach(response => {
+            $("#currentWatch .current-responses").append("<p  class = 'animated fadeIn'><strong>" + response.userName + ":</strong> " + response.questionResponse.movie.title + "</p>");
         });
     },
 
@@ -38,10 +38,10 @@ const _page = {
         $("#currentWatch .current-responses").html('');
     },
     setModal: (movieShuffle) => {
-        $("#rollModal .modal-body .nextQuestion").html("<span>#" + movieShuffle.nextUp.Question.Ordinal + ": " + movieShuffle.nextUp.Question.Text+"</span>");
+        $("#rollModal .modal-body .nextQuestion").html("<span>#" + movieShuffle.nextUp.question.ordinal + ": " + movieShuffle.nextUp.question.text+"</span>");
 
-        movieShuffle.nextUp.QuestionResponses.forEach((response) => {
-            $("#rollModal .modal-body .responses").append("<p  class = 'animated fadeIn'><strong>" + response.UserName + ":</strong> " + response.QuestionResponse.Response + "</p>");
+        movieShuffle.nextUp.questionResponses.forEach((response) => {
+            $("#rollModal .modal-body .responses").append("<p  class = 'animated fadeIn'><strong>" + response.userName + ":</strong> " + response.questionResponse.movie.title + "</p>");
         });
     },
 
@@ -62,7 +62,9 @@ const _page = {
 $(function () {
 
     _page.refresh();
+    $('body').append($(_modal.getDomElement(false)));
 
+    $('body').on('click', '.movieLink', function () { _modal.refresh($(this).data('id')) });
 
     $("#rollModal").on("shown.bs.modal", function (e) {
         _page.clearModal();

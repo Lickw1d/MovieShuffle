@@ -32,23 +32,23 @@ const movieShuffleService = {
 
                 movieShuffle.remainingMoviesTable.forEach((value, index) => {
                     var flatRow = {};
-                    flatRow["#"] = value.Question.Ordinal;
-                    flatRow["Question"] = value.Question.Text;
-                    flatRow["Watched"] = value.Watched ? "Yes" : "No";
+                    flatRow["#"] = value.question.ordinal;
+                    flatRow["Question"] = value.question.text;
+                    flatRow["Watched"] = value.watched ? "Yes" : "No";
 
-                    value.QuestionResponses.forEach((response) => {
-                        if (!tableHash[response.UserName])
-                            tableHash[response.UserName] = true;
+                    value.questionResponses.forEach((response) => {
+                        if (!tableHash[response.userName])
+                            tableHash[response.userName] = true;
 
-                        flatRow[response.UserName] = response.QuestionResponse.Response;
+                        flatRow[response.userName] = "<a data-toggle='modal' class='movieLink' data-target='#sync-modal' href='#' data-id='"+response.questionResponse.movie.id+"'>"+response.questionResponse.movie.title+"</a>";
                     });
 
                     movieShuffle.flattenedTable.push(flatRow);
 
-                    if (!value.Watched)
+                    if (!value.watched)
                         movieShuffle.shuffleSet.push(index);
 
-                    if (value.Watching)
+                    if (value.watching)
                         movieShuffle.currentMovie = value;
                 });
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MovieShuffle.Data;
@@ -14,6 +15,7 @@ using Newtonsoft.Json;
 
 namespace MovieShuffle.Controllers
 {
+    [Authorize]
     public class MovieShuffleController : Controller
     {
         private RemainingMovieItemDbProvider remainingMovieDbProvider;
@@ -38,7 +40,7 @@ namespace MovieShuffle.Controllers
         {
             IEnumerable<RemainingMovieItem> movieItems = remainingMovieDbProvider.Get();
             IEnumerable<GroupedRemainingMovieItem> movieGroups = groupedRemainingMovieItemFactory.CreateList(movieItems);
-            return Ok(JsonConvert.SerializeObject(movieGroups));
+            return Ok(movieGroups);
         }
 
         [HttpPost]

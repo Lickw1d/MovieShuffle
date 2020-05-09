@@ -20,23 +20,31 @@ namespace MovieShuffle.Utilities.Db.Providers
             ) : base(configuration)
         {
             getByProc = "usp_GetRemainingMovieItems";
+            dbObjectName = "remainingMovieItem";
             this.questionResponseDbProvider = questionResponseDbProvider;
         }
 
-        public override RemainingMovieItem GetFromDataRow(DataRow row, Dictionary<string, string> overrides)
+        public override RemainingMovieItem GetFromDataRow(DataRow row, Dictionary<string, Dictionary<string,string>> overrides)
         {
-            //since proc returns 
-            Dictionary<string, string> subOverrides = new Dictionary<string, string>();
-            subOverrides.AddLowerCase("id", "QuestionResponseId");
-            subOverrides.AddLowerCase("CreatedTimeStamp", "QuestionResponseCreatedTimestamp");
-            var questionResponse = questionResponseDbProvider.GetFromDataRow(row, subOverrides);
+            if (overrides.Count == 0)
+            {
+                overrides.AddLowerCase("Movie", new Dictionary<string, string>()
+                {
+                    {"id", "MovieId"}
+                });
+                overrides.AddLowerCase("QuestionResponse", new Dictionary<string, string>()
+                {
+                    {"id", "QuestionResponseId"},
+                    {"CreatedTimeStamp", "QuestionResponseCreatedTimestamp"}
+                });
+            }
 
             return new RemainingMovieItem()
             {
-                QuestionResponse = questionResponse,
-                UserName = row.FieldOverride<string>("UserName", overrides),
-                Watched = row.FieldOverride<bool>("Watched", overrides),
-                Watching = row.FieldOverride<bool>("Watching",overrides)
+                QuestionResponse = questionResponseDbProvider.GetFromDataRow(row, overrides),
+                UserName = row.FieldOverride<string>("UserName", overrides.GetDictionaryValue(dbObjectName)),
+                Watched = row.FieldOverride<bool>("Watched", overrides.GetDictionaryValue(dbObjectName)),
+                Watching = row.FieldOverride<bool>("Watching",overrides.GetDictionaryValue(dbObjectName))
             };
         }
     }
