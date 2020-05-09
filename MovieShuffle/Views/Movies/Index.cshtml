@@ -14,6 +14,7 @@
                 _page.movieData = response.data;
                 _.forEach(_page.movieData,
                     movieRow => {
+                        movieRow.title = "<a href='#' data-toggle='modal' data-target='#sync-modal' class='movieLink' data-id='"+movieRow.id+"'>"+movieRow.title+"</a>",
                         movieRow["editButton"] = `<button type='button' data-toggle="modal" data-target="#sync-modal"
                                             style='background-color:` +
                             (movieRow.tmdbId ? '#6f6f6f' : '#3bde9a') +
@@ -47,7 +48,7 @@
 
        $('body').append($(_modal.getDomElement(true)));
 
-        $('body').on('click', '.syncButton',function(){_modal.refresh($(this).data('id'))});
+        $('body').on('click', '.syncButton, .movieLink',function(){_modal.refresh($(this).data('id'))});
 
         $('body').on('keyup',
             '.bootstrap-select input[type="search"]',

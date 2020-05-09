@@ -15,6 +15,7 @@
                 $('#sync-modal .btn-info').removeClass('invisible').removeClass('visible').addClass('invisible');
                 $('#sync-modal .btn-dark').removeClass('invisible').removeClass('visible').addClass('invisible');
                 $("#sync-modal .tmdb-poster").attr('src', '');
+                $('#sync-modal').css({ 'background-image': "" });
 
                 _modal.getMovie(id);
             },
@@ -32,9 +33,15 @@
                         $('#sync-modal .btn-info').removeClass('invisible').removeClass('visible').addClass('visible');
                         $('#sync-modal .btn-dark').removeClass('invisible').removeClass('visible').addClass('visible');
 
-                        if (_modal.currentMovie.posterUrl)
-                            $('#sync-modal .tmdb-poster').attr('src',
-                                'http://image.tmdb.org/t/p/w185/' + _modal.currentMovie.posterUrl);
+                        if (_modal.currentMovie.posterUrl) {
+                            $('#sync-modal .tmdb-poster').attr('src','http://image.tmdb.org/t/p/w185/' + _modal.currentMovie.posterUrl);
+
+                            $('#sync-modal').css({
+                                'background-image': 'linear-gradient(rgba(0, 0, 0, 0.45),rgba(0, 0, 0, 0.45)),url("http://image.tmdb.org/t/p/original/' + _modal.currentMovie.posterUrl + '")',
+                                'background-position': 'center',
+                                'background-repeat': 'no-repeat',
+                                'background-size': 'cover',
+                            })}
 
                         if (_modal.currentMovie.releaseDate)
                             $('#sync-modal .release-date').html("<strong>Released:</strong> " +
