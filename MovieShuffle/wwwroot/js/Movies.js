@@ -94,5 +94,4 @@
                 _modal.selected = _.find(_modal.options, {"id": id});
             });
 
-       $("sync-modal .filter-option-inner-inner").on('change', function() {console.log('changed')});
     });
